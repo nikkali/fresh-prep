@@ -1,0 +1,148 @@
+No, the current setup isn't configured for Netlify CMS. Let me add the Netlify CMS configuration. Here are the files we need to add:
+
+=== Start File ===
+public/admin/index.html
+---
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fresh Prep Content Manager</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- Include the script that builds the page and powers Netlify CMS -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+=== End File ===
+
+=== Start File ===
+public/admin/config.yml
+---
+backend:
+  name: git-gateway
+  branch: main # Branch to update
+
+media_folder: "public/images/uploads" # Media files will be stored here
+public_folder: "/images/uploads" # The src attribute for uploaded media
+
+collections:
+  - name: "meals" # Used in routes, e.g., /admin/collections/meals
+    label: "Meals" # Used in the UI
+    folder: "content/meals" # The path to the folder where the documents are stored
+    create: true # Allow users to create new documents in this collection
+    slug: "{{slug}}" # Filename template, e.g., title.md
+    fields: # The fields for each document
+      - {label: "ID", name: "id", widget: "string"}
+      - {label: "Name", name: "name", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Price", name: "price", widget: "number", value_type: "float"}
+      - {label: "Category", name: "category", widget: "select", options: ["weekly", "freezer"]}
+      - {label: "Image", name: "image", widget: "image"}
+      - label: "Macros"
+        name: "macros"
+        widget: "object"
+        fields:
+          - {label: "Protein", name: "protein", widget: "string"}
+          - {label: "Carbs", name: "carbs", widget: "string"}
+          - {label: "Fat", name: "fat", widget: "string"}
+
+  - name: "settings"
+    label: "Settings"
+    files:
+      - label: "Payment Settings"
+        name: "payment"
+        file: "content/settings/payment.yml"
+        fields:
+          - {label: "Cash App Username", name: "cashapp", widget: "string"}
+          - {label: "Venmo Username", name: "venmo", widget: "string"}
+          - {label: "Order Email", name: "orderEmail", widget: "string"}
+=== End File ===
+
+=== Start File ===
+netlify.toml
+---
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Redirect /admin to the admin interface
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
+
+# Handle client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+=== End File ===
+
+To deploy with Netlify CMS:
+
+1. Push your code to GitHub:
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin YOUR_GITHUB_REPO_URL
+git push -u origin main
+```
+
+2. On Netlify:
+- Sign up/Login to Netlify
+- Click "New site from Git"
+- Choose your repository
+- Deploy settings:
+  - Build command: `npm run build`
+  - Publish directory: `.next`
+- Click "Deploy site"
+
+3. Enable Netlify Identity:
+- Go to your site settings in Netlify
+- Find "Identity" and click "Enable Identity"
+- Under Identity settings:
+  - Enable Git Gateway
+  - Set registration to "Invite only"
+  - Add external providers if desired
+
+4. Invite yourself as an admin:
+- Go to Identity tab
+- Click "Invite users"
+- Enter your email
+- Accept the invitation in your email
+
+5. Access the admin panel:
+- Go to yourdomain.com/admin
+- Log in with your credentials
+- Start managing content
+
+The admin panel will let you:
+1. Add/edit/delete meals
+2. Update payment settings
+3. Manage images
+4. Change categories
+
+Would you like me to:
+1. Add more configuration options?
+2. Show how to customize the admin interface?
+3. Add more content types to manage?
+
+Let me know what specific features you'd like in the admin panel!
