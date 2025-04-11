@@ -2,30 +2,21 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "public/images"
-public_folder: "/images"
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
 
 collections:
   - name: "products"
     label: "Products"
     folder: "content/products"
     create: true
-    slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
-      - { label: "Name", name: "name", widget: "string" }
+      - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
-      - { label: "Price", name: "price", widget: "number", value_type: "float" }
-      - {
-          label: "Category",
-          name: "category",
-          widget: "select",
-          options: ["weekly", "freezer"]
-        }
+      - { label: "Price", name: "price", widget: "number" }
       - { label: "Image", name: "image", widget: "image" }
-      - label: "Macros"
-        name: "macros"
-        widget: "object"
-        fields:
-          - { label: "Protein", name: "protein", widget: "string" }
-          - { label: "Carbs", name: "carbs", widget: "string" }
-          - { label: "Fat", name: "fat", widget: "string" }
+      - { label: "Category", name: "category", widget: "select", options: ["Meal Prep", "Snacks", "Desserts"] }
+      - { label: "Available", name: "available", widget: "boolean", default: true }
+      - { label: "Ingredients", name: "ingredients", widget: "list" }
+      - { label: "Allergens", name: "allergens", widget: "list" }

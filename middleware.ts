@@ -7,10 +7,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   } catch (error) {
     console.error('Middleware error:', error)
-    return new NextResponse(
-      JSON.stringify({ success: false, message: 'Internal server error' }),
-      { status: 500, headers: { 'content-type': 'application/json' } }
-    )
+    return NextResponse.redirect(new URL('/error', request.url))
   }
 }
 
